@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block body %}
+{% for message in app.flashes('success') %}
+<div class="alert alert-success mt-4">
+    {{ message }}
+</div>
+{% endfor %}
+<div class="container text-center mt-5">
+    <h1>Votre Dashboard</h1>
+    <p>Jetez un oeil à vos différents modules</p>
+    <p>Ou alors ajoutez en un !</p>
+</div>
+
+<div class="container mt-4">
+    <div class="row">
+        {% for module in modules %}
+        <div class="col-md-4 mb-4">
+            <div class="card bg-primary text-white">
+                <div class="card-header">{{ module.name }}</div>
+                <div class="card-body">
+                    <h4 class="card-title">Détails des données du module</h4>
+                    <ul>
+                        {% for moduleData in module.moduleData %}
+                        <li>
+                            Température : {{ moduleData.temperature }}
+                            <!-- futur data a add ici li li  li-->
+                        </li>
+                        <li>
+                            Énergie : {{ moduleData.energy }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="container text-center mt-4">
+    <a href="{{ path('app_module_new') }}" class="btn btn-primary">Ajouter un module</a>
+</div>
+
+<div class="container mt-5">
+    <h1>FUTUR GRAPHIQUE DERNIER MODULE AJOUTE</h1>
+</div>
+{% endblock %}
