@@ -1,0 +1,111 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails des données{% endblock %}
+
+{% block body %}
+    <div class="container text-center">
+        <h1 class="mb-4 mt-4">Données de votre {{ module.name }}</h1>
+
+        <div>
+        <canvas id="temperatureChart" width="300" height="150"></canvas>
+        </div>
+
+        <div>
+        <canvas id="energyChart" width="300" height="150"></canvas>
+        </div>
+
+        <table class="table table-hover mx-auto mt-5">
+            <thead>
+                <tr>
+                    <th scope="col">Température</th>
+                    <th scope="col">Énergie</th>
+                    <th scope="col">Mesuré le</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for moduleData in module.moduleData %}
+                    <tr>
+                        <td>{{ moduleData.temperature ~ '°C' }}</td>
+                        <td>{{ moduleData.energy }}</td>
+                        <td>{{ moduleData.createdAt|date('Y-m-d H:i:s') }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <a href="{{ path('app_module_index') }}" class="btn btn-primary mt-5">Retour à la liste des modules</a>
+    </div>
+
+
+<script>
+    var temperatureData = [];
+    var dateLabels = [];
+
+    {% for moduleData in module.moduleData %}
+        temperatureData.push({{ moduleData.temperature }});
+        dateLabels.push('{{ moduleData.createdAt|date('Y-m-d H:i:s') }}');
+    {% endfor %}
+
+    var ctx = document.getElementById('temperatureChart').getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: dateLabels,
+            datasets: [{
+                label: 'Température par minute',
+                data: temperatureData,
+                borderColor: 'rgba(0, 0, 128, 1)',
+                borderWidth: 1,
+                fill: false
+            }]
+        },
+    options: {
+        scales: {
+            y: {
+                ticks: {
+                    callback: function(value, index, values) {
+                        return value + '°C';
+                    }
+                }
+            }
+        }
+    }
+    });
+
+
+    var energyData = [];
+    var dateLabelsEnergy = [];
+
+    {% for moduleData in module.moduleData %}
+        energyData.push({{ moduleData.energy }});
+        dateLabelsEnergy.push('{{ moduleData.createdAt|date('Y-m-d H:i:s') }}');
+    {% endfor %}
+
+    var ctxEnergy = document.getElementById('energyChart').getContext('2d');
+    var energyChart = new Chart(ctxEnergy, {
+        type: 'line',
+        data: {
+            labels: dateLabelsEnergy,
+            datasets: [{
+                label: 'Énergie par minute',
+                data: energyData,
+                borderColor: 'rgba(255, 165, 0, 1)', // Choose your desired color
+                borderWidth: 1,
+                fill: false
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    ticks: {
+                        callback: function(value, index, values) {
+                            return value; // You can add units or formatting if needed
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+{% endblock %}

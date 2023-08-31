@@ -39,6 +39,17 @@ class ModuleController extends AbstractController
         $moduleData->setBroken($faker->randomElement([0, 1])); // État aléatoire (cassé ou non)
         
         $module->addModuleData($moduleData);
+
+        // Ajouter des données aléatoires supplémentaires au module
+        for ($i = 0; $i < 5; $i++) {
+        $additionalModuleData = new ModuleData();
+        $additionalModuleData->setCreatedAt(new \DateTimeImmutable());
+        $additionalModuleData->setTemperature($faker->randomFloat(2, 18, 30));
+        $additionalModuleData->setEnergy($faker->randomNumber(3));
+        $additionalModuleData->setBroken($faker->randomElement([0, 1]));
+        
+        $module->addModuleData($additionalModuleData);
+    }
         
         $form = $this->createForm(ModuleType::class, $module);
         $form->handleRequest($request);
@@ -81,16 +92,28 @@ class ModuleController extends AbstractController
     {
         $form = $this->createForm(ModuleType::class, $module);
         $form->handleRequest($request);
-
+    
+        if ($form->isSubmitted() && !$form->isValid()) {
+            $this->addFlash(
+                'danger',
+                'Oups, veuillez réessayer !'
+            );
+        }
+    
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
-
+    
+            $this->addFlash(
+                'success',
+                'Module modifié avec succès !'
+            );
+    
             return $this->redirectToRoute('app_module_index', [], Response::HTTP_SEE_OTHER);
         }
-
+    
         return $this->render('module/edit.html.twig', [
             'module' => $module,
-            'form' => $form,
+            'form' => $form->createView(),
         ]);
     }
 
@@ -110,5 +133,15 @@ class ModuleController extends AbstractController
     
         return $this->redirectToRoute('app_module_index', [], Response::HTTP_SEE_OTHER);
     }
+
+    #[Route('/{id}/show-module-data', name: 'app_module_show_module_data', methods: ['GET'])]
+    public function showModuleData(Module $module): Response
+    {
+        return $this->render('module/show_module_data.html.twig', [
+        'module' => $module,
+    ]);
+    }
     
 }
+
+

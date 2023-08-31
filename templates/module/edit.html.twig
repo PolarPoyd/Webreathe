@@ -1,13 +1,28 @@
+{# module/edit.html.twig #}
+
 {% extends 'base.html.twig' %}
 
 {% block title %}Edit Module{% endblock %}
 
 {% block body %}
-    <h1>Edit Module</h1>
 
-    {{ include('module/_form.html.twig', {'button_label': 'Modifier'}) }}
+{% for message in app.flashes('danger') %}
+<div class="alert alert-danger mt-4">
+    {{ message }}
+</div>
+{% endfor %}
 
-    <a href="{{ path('app_module_index') }}">back to list</a>
+<h1>Edit Module</h1>
 
-    {{ include('module/_delete_form.html.twig') }}
+{{ form_errors(form) }}
+
+{{ form_start(form) }}
+{{ form_widget(form) }}
+
+<button class="btn btn-primary">Modifier</button>
+{{ form_end(form) }}
+
+<a href="{{ path('app_module_index') }}">Retour à la liste</a>
+
+{{ include('module/_delete_form.html.twig') }}
 {% endblock %}

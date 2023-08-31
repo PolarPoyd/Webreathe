@@ -3,11 +3,13 @@
 {% block title %}Nouveau module{% endblock %}
 
 {% block body %}
+
 {% for message in app.flashes('danger') %}
 <div class="alert alert-danger mt-4">
     {{ message }}
 </div>
 {% endfor %}
+
     <h1>Ajoutez un module</h1>
 
     {{ include('module/_form.html.twig') }}

@@ -2,49 +2,73 @@
 
 {% block title %}Dashboard{% endblock %}
 
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/dashboard-update.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            initDashboardUpdate('{{ path('app_latest_data_api') }}', 5000);
+        });
+    </script>
+    
+{% endblock %}
+
 {% block body %}
-{% for message in app.flashes('success') %}
-<div class="alert alert-success mt-4">
-    {{ message }}
-</div>
-{% endfor %}
-<div class="container text-center mt-5">
-    <h1>Votre Dashboard</h1>
-    <p>Jetez un oeil à vos différents modules</p>
-    <p>Ou alors ajoutez en un !</p>
-</div>
-
-<div class="container mt-4">
-    <div class="row">
-        {% for module in modules %}
-        <div class="col-md-4 mb-4">
-            <div class="card bg-primary text-white">
-                <div class="card-header">{{ module.name }}</div>
-                <div class="card-body">
-                    <h4 class="card-title">Détails des données du module</h4>
-                    <ul>
-                        {% for moduleData in module.moduleData %}
-                        <li>
-                            Température : {{ moduleData.temperature }}
-                            <!-- futur data a add ici li li  li-->
-                        </li>
-                        <li>
-                            Énergie : {{ moduleData.energy }}
-                        </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success mt-4">
+            {{ message }}
         </div>
-        {% endfor %}
+    {% endfor %}
+    <div class="container text-center mt-5">
+        <h1>Votre Dashboard</h1>
+        <p>Jetez un œil à vos différents modules</p>
+        <p>Ou alors ajoutez-en un !</p>
     </div>
-</div>
 
-<div class="container text-center mt-4">
-    <a href="{{ path('app_module_new') }}" class="btn btn-primary">Ajouter un module</a>
-</div>
+    <div class="container mt-4">
+        <div class="row">
+            {% for module in modules %}
+                <div class="col-md-4 mb-4">
+                    <div class="card bg-primary text-white">
+                        <div class="card-header">{{ module.name }}</div>
+                        <div class="card-body">
+                            <h4 class="card-title">Dernières données du module</h4>
+                            <ul>
+                                {% set latestModuleData = module.moduleData|last %}
+                                <li>
+                                    Température : <span id="temperature-{{ module.id }}">{{ latestModuleData.temperature }}</span>
+                                </li>
+                                <li>
+                                    Énergie : <span id="energy-{{ module.id }}">{{ latestModuleData.energy }}</span>
+                                </li>
+                                <li>
+                                    Mesuré le <span id="created-at-{{ module.id }}">{{ latestModuleData.createdAt|date('d/m/Y \à H:i', 'Europe/Paris') }}</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="card-footer">
+                            <a href="{{ path('app_module_show_module_data', {'id': module.id}) }}" class="btn btn-info">Voir les détails</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
 
-<div class="container mt-5">
-    <h1>FUTUR GRAPHIQUE DERNIER MODULE AJOUTE</h1>
-</div>
+    <div class="container text-center mt-4">
+        <a href="{{ path('app_module_new') }}" class="btn btn-primary">Ajouter un module</a>
+    </div>
+
+    <div class="container mt-5">
+        <h1>FUTUR GRAPHIQUE DERNIER MODULE AJOUTÉ</h1>
+    </div>
+
+    {% if modules is empty %}
+        <button class="btn btn-primary" disabled>Activer l'injection de données</button>
+        <button class="btn btn-danger" disabled>Désactiver l'injection de données</button>
+    {% else %}
+        <a href="{{ path('enable_data_injection') }}" class="btn btn-primary">Activer l'injection de données</a>
+        <a href="{{ path('disable_data_injection') }}" class="btn btn-danger">Désactiver l'injection de données</a>
+    {% endif %}
 {% endblock %}
