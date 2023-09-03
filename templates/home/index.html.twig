@@ -1,19 +1,28 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Dashboard
+{% block title %}
+Dashboard
 {% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
-    <script src="{{ asset('js/dashboard-update.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="{{ asset('js/dashboard-update.js') }}"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             initDashboardUpdate('{{ path('app_latest_data_api') }}', 10000);
-        });
 
-        document.addEventListener("DOMContentLoaded", function () {
             var activateButton = document.getElementById("activate-data-injection");
+            var deactivateButton = document.getElementById("deactivate-data-injection");
+
+            if (localStorage.getItem('dataInjectionActivated') === 'true') {
+                activateButton.disabled = true;
+                deactivateButton.disabled = false;
+            } else {
+                activateButton.disabled = false;
+                deactivateButton.disabled = true;
+            }
+
             activateButton.addEventListener("click", function () {
                 axios.post("{{ path('enable_data_injection') }}")
                     .then(function (response) {
@@ -21,6 +30,21 @@
 
                         activateButton.disabled = true;
                         deactivateButton.disabled = false;
+                        localStorage.setItem('dataInjectionActivated', 'true'); 
+                    })
+                    .catch(function (error) {
+                        console.error(error);
+                    });
+            });
+
+            deactivateButton.addEventListener("click", function () {
+                axios.post("{{ path('disable_data_injection') }}")
+                    .then(function (response) {
+                        console.log(response);
+
+                        activateButton.disabled = false;
+                        deactivateButton.disabled = true;
+                        localStorage.removeItem('dataInjectionActivated');
                     })
                     .catch(function (error) {
                         console.error(error);
@@ -31,109 +55,104 @@
 {% endblock %}
 
 {% block body %}
-	<div class="container">
-		<div class="row justify-content-center">
-			<div class="col-md-6">
-				{% for message in app.flashes('success') %}
-					<div class="alert alert-dismissible alert-success mt-4" role="alert">
-						<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-						{{ message }}
-					</div>
-				{% endfor %}
-			</div>
-		</div>
-	</div>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                {% for message in app.flashes('success') %}
+                    <div class="alert alert-dismissible alert-success mt-4" role="alert">
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
 
-	<div class="container text-center mt-5">
-		<h1>Votre Dashboard</h1>
-	</div>
+    <div class="container text-center mt-5">
+        <h1>Votre Dashboard</h1>
+    </div>
 
-	<div class="container mt-4">
-		<div class="bg-primary text-white p-3 rounded">
-			<p class="text-center">Générez des données aléatoires toutes les une minutes</p>
-			<div class="d-flex justify-content-center">
-				{% if modules is empty %}
-					<button class="btn btn-primary mx-2" disabled>Activer</button>
-					<a href="{{ path('disable_data_injection') }}" class="btn btn-danger mx-2">Désactiver</a>
-				{% else %}
-					<button class="btn btn-primary mx-2" id="activate-data-injection">Activer</button>
-					<a href="{{ path('disable_data_injection') }}" class="btn btn-danger mx-2">Désactiver</a>
-				{% endif %}
-			</div>
-		</div>
-	</div>
+    <div class="container mt-4">
+        <div class="bg-primary text-white p-3 rounded">
+            <p class="text-center">Générez des données aléatoires toutes les une minutes</p>
+            <div class="d-flex justify-content-center">
+                {% if not modules is empty %}
+                    <button class="btn btn-primary mx-2" id="activate-data-injection" disabled>Activer</button>
+                    <button class="btn btn-danger mx-2" id="deactivate-data-injection" disabled>Désactiver</button>
+                {% else %}
+                    <p class="text-center">Aucun module disponible pour activer cette fonctionnalité.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 
-	<div class="container mt-4 mb-4 text-center">
-		<p>Jetez un œil à vos différents modules
-			<br>
-			Ou alors ajoutez-en un !</p>
-	</div>
+    <div class="container mt-4 mb-4 text-center">
+        <p>Jetez un œil à vos différents modules<br>Ou alors ajoutez-en un !</p>
+    </div>
 
-	<div class="container mt-4">
-		<div class="row">
-			{% for module in modules %}
-				{% set latestModuleData = module.moduleData|last %}
-				<div
-					class="col-md-4 mb-3">
-					<div class="card {{ latestModuleData.broken ? 'bg-danger' : 'bg-primary' }} text-white" id="card-{{ module.id }}">
-						<div class="card-header text-center">
-							<h3>{{ module.name }}</h3> 
-							{% if latestModuleData.broken %}
-								<i class="fas fa-exclamation-triangle text-warning ml-2"></i>
-							{% endif %}
-						</div>
+    <div class="container mt-4">
+        <div class="row">
+            {% for module in modules %}
+                {% set latestModuleData = module.moduleData|last %}
+                <div class="col-md-4 mb-3">
+                    <div class="card {{ latestModuleData.broken ? 'bg-danger' : 'bg-primary' }} text-white" id="card-{{ module.id }}">
+                        <div class="card-header text-center">
+                            <h3>{{ module.name }}</h3> 
+                        </div>
 
-						<div
-							class="card-body d-flex flex-column">
-							<ul class="list-group">
-								<li class="list-group-item">
-									<strong>Température:</strong>
-									<i class="fas fa-thermometer-half text-info ml-2"></i>
-									<span id="temperature-{{ module.id }}">
-										{{ latestModuleData.temperature }}
-										°C
-									</span>
-								</li>
+                        <div class="card-body d-flex flex-column">
+                            <ul class="list-group">
+                                <li class="list-group-item">
+                                    <strong>Température:</strong>
+                                    <i class="fas fa-thermometer-half text-info ml-2"></i>
+                                    <span id="temperature-{{ module.id }}">
+                                        {{ latestModuleData.temperature }}
+                                        °C
+                                    </span>
+                                </li>
+                                <li class="list-group-item">
+                                    <strong>Énergie:</strong>
+                                    <i class="fas fa-bolt text-warning ml-2"></i>
+                                    <span id="energy-{{ module.id }}">
+                                        {{ latestModuleData.energy }}
+                                        W/m
+                                    </span>
+                                </li>
+                                <li class="list-group-item">
+                                    <strong>Panne:</strong>
+                                    <span id="broken-{{ module.id }}" class="{{ latestModuleData.broken ? 'text-danger' : 'text-success' }}">
+                                        {{ latestModuleData.broken ? 'Oui' : 'Non' }}
+                                    </span>
+                                </li>
+                                <li class="list-group-item">
+                                    <strong>Donées reçues:</strong>
+                                    <span id="created-at-{{ module.id }}">
+                                        {{ latestModuleData.createdAt|date('d-m-Y H:i:s') }}
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="card-footer">
+                            <div class="btn-group d-flex justify-content-center">
+                                <a href="{{ path('app_module_show_module_data', {'id': module.id}) }}" class="btn btn-info text-center">
+                                    <i class="fas fa-info-circle mr-2"></i>
+                                    Détails
+                                </a>
+                                <a href="{{ path('app_module_show_module_history', {'id': module.id}) }}" class="btn btn-primary text-center">
+                                    <i class="fas fa-history mr-2"></i>
+                                    Historique
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
 
-								<li class="list-group-item">
-									<strong>Énergie:</strong>
-									<i class="fas fa-bolt text-warning ml-2"></i>
-									<span id="energy-{{ module.id }}">
-										{{ latestModuleData.energy }}
-										W/m
-									</span>
-								</li>
+    <div class="container text-center mt-4">
+        <a href="{{ path('app_module_new') }}" class="btn btn-primary">Ajouter un module</a>
+    </div>
 
-								<li class="list-group-item">
-									<strong>Panne:</strong>
-									<span id="broken-{{ module.id }}" class="{{ latestModuleData.broken ? 'text-danger' : 'text-success' }}">
-										{{ latestModuleData.broken ? 'Oui' : 'Non' }}
-									</span>
-								</li>
-							</ul>
-						</div>
-						<div class="card-footer">
-							<div class="btn-group d-flex justify-content-center">
-								<a href="{{ path('app_module_show_module_data', {'id': module.id}) }}" class="btn btn-info text-center">
-									<i class="fas fa-info-circle mr-2"></i>
-									Détails
-								</a>
-								<a href="{{ path('app_module_show_module_history', {'id': module.id}) }}" class="btn btn-primary text-center">
-									<i class="fas fa-history mr-2"></i>
-									Historique
-								</a>
-							</div>
-						</div>
-
-					</div>
-				</div>
-			{% endfor %}
-		</div>
-	</div>
-
-	<div class="container text-center mt-4">
-		<a href="{{ path('app_module_new') }}" class="btn btn-primary">Ajouter un module</a>
-	</div>
-
-	<div style="height: 200px;"></div>
+    <div style="height: 200px;"></div>
 {% endblock %}

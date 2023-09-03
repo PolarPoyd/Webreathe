@@ -7,7 +7,6 @@ use App\Entity\Module;
 use App\Form\ModuleType;
 use App\Entity\ModuleData;
 use App\Repository\ModuleRepository;
-use Symfony\Component\Form\FormError;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Request;
