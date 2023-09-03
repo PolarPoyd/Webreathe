@@ -6,13 +6,12 @@
     <div class="container">
         <h1 class="text-center mt-5">Mes modules</h1>
 
-        <table class="table table-hover table-bordered mt-5"> 
-            <thead class="table-primary"> 
+        <table class="table table-hover mt-5"> 
+            <thead scope="row"> 
                 <tr>
                     <th scope="col">Appareils</th>
                     <th scope="col">Crée le</th>
                     <th scope="col">Actions</th>
-                    <th scope="col">Actions</th> 
                 </tr>
             </thead>
             <tbody>
@@ -27,15 +26,15 @@
                         {% endif %}
                     </td>
                     <td>
-                        <a class="btn btn-outline-info" href="{{ path('app_module_edit', {'id': module.id}) }}">Modifier</a>
-                    </td>
-                    <td>
-                        {{ include('module/_delete_form.html.twig') }}
+                        <div class="btn-group" role="group">
+                            <a class="btn btn-link" href="{{ path('app_module_edit', {'id': module.id}) }}" title="Modifier"><i class="fas fa-edit"></i></a>
+                            {{ include('module/_delete_form.html.twig') }}
+                        </div>
                     </td>
                 </tr>
             {% else %}
                 <tr>
-                    <td colspan="4" class="text-center">Il n'y a rien ici...</td>
+                    <td colspan="3" class="text-center">Il n'y a rien ici...</td>
                 </tr>
             {% endfor %}
             </tbody>
@@ -44,5 +43,11 @@
         <div class="text-center mt-5">
             <a class="btn btn-primary" href="{{ path('app_module_new') }}">Ajouter un module</a>
         </div>
+        <div class="text-center mt-5">
+            <a class="btn btn-primary" href="{{ path('app_home') }}">Dashboard</a>
+        </div>
     </div>
+
+    <div style="height: 300px;"></div>
+
 {% endblock %}

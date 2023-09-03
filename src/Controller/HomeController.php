@@ -42,19 +42,24 @@ class HomeController extends AbstractController
     public function getLatestDataApi(ModuleRepository $moduleRepository): JsonResponse
     {
         $latestData = [];
-
+    
         foreach ($moduleRepository->findAll() as $module) {
             $latestModuleData = $module->getModuleData()->last();
             if ($latestModuleData) {
+                // Convertir la date et l'heure au format français
+                $createdAt = $latestModuleData->getCreatedAt()->setTimezone(new \DateTimeZone('Europe/Paris'));
+                $formattedCreatedAt = $createdAt->format('le d/m/Y à H:i');
+    
                 $latestData[] = [
                     'moduleId' => $module->getId(),
                     'temperature' => $latestModuleData->getTemperature(),
                     'energy' => $latestModuleData->getEnergy(),
-                    'createdAt' => $latestModuleData->getCreatedAt()->format('d/m/Y H:i'),
+                    'broken' => $latestModuleData->getBroken(),
+                    'createdAt' => $formattedCreatedAt,
                 ];
             }
         }
-
+    
         return new JsonResponse($latestData);
     }
 }

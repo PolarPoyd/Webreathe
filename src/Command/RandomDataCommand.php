@@ -78,15 +78,25 @@ class RandomDataCommand extends Command
         foreach ($modules as $module) {
             $moduleData = new ModuleData();
             $moduleData->setCreatedAt(new \DateTimeImmutable());
-            $moduleData->setTemperature($faker->randomFloat(2, 18, 30));
-            $moduleData->setEnergy($faker->randomNumber(3));
-            $moduleData->setBroken($faker->boolean);
-
+        
+            if ($faker->boolean) {
+                $moduleData->setBroken(true);
+                $moduleData->setTemperature(0);
+                $moduleData->setEnergy(0);
+                $moduleData->setFlow(0); 
+                $moduleData->setSpeed(0);
+            } else {
+                $moduleData->setBroken(false);
+                $moduleData->setTemperature($faker->randomFloat(2, 18, 30));
+                $moduleData->setEnergy($faker->randomNumber(3));
+                $moduleData->setFlow($faker->randomFloat(2, 10000, 80000));
+                $moduleData->setSpeed($faker->randomFloat(2, 1, 10));
+            }
+        
             $module->addModuleData($moduleData);
-
             $this->entityManager->persist($moduleData);
         }
-
+        
         $this->entityManager->flush();
 
         $output->writeln('Données aléatoires ajoutées.');

@@ -1,0 +1,56 @@
+{% block body %}
+    <canvas id="flowChart" width="300" height="150"></canvas>
+
+    <script>
+        var flowData = [];
+        var dateLabelsFlow = [];
+
+        {% set num_entries_to_display = 5 %}
+        {% set reversed_data = module.moduleData|slice(-num_entries_to_display)|reverse %}
+        {% for moduleData in reversed_data %}
+            flowData.unshift({{ moduleData.flow }}); 
+            var timestampFlow = new Date('{{ moduleData.createdAt|date('Y-m-d H:i:s') }}');
+            var formattedTimestampFlow = 'à ' + timestampFlow.getHours() + 'h' + timestampFlow.getMinutes();
+            dateLabelsFlow.unshift(formattedTimestampFlow);
+        {% endfor %}
+
+        var ctxFlow = document.getElementById('flowChart').getContext('2d');
+        var flowChart = new Chart(ctxFlow, {
+            type: 'bar',
+            data: {
+                labels: dateLabelsFlow,
+                datasets: [{
+                    label: 'Débit par minute en octets', 
+                    data: flowData,
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)', // Nuance de bleu
+                    borderColor: 'rgba(54, 162, 235, 1)', // Nuance de bleu
+                    borderWidth: 1,
+                    hoverBackgroundColor: '#126ce7', // Nuance de bleu
+                    hoverBorderColor: 'rgba(75, 192, 192, 1)', // Nuance de bleu
+                }]
+            },
+            options: {
+    responsive: true,
+    scales: {
+        x: { 
+            ticks: {
+                autoSkip: true,
+                maxRotation: 45,
+                minRotation: 0
+            }
+        },
+        y: {
+            suggestedMin: 0, // Valeur minimale de l'axe y
+            suggestedMax: 100000, // Valeur maximale de l'axe y (100 000 octets)
+            ticks: {
+                callback: function(value, index, values) {
+                    return value + ' octets'; 
+                }
+            }
+        }
+    }
+}
+
+        });
+    </script>
+{% endblock %}

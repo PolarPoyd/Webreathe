@@ -1,0 +1,61 @@
+{% block body %}
+
+<canvas id="speedChart" width="300" height="150"></canvas>
+
+<script>
+    var speedData = [];
+    var dateLabels = [];
+
+    {% set num_entries_to_display = 5 %}
+    {% set reversed_data = module.moduleData|slice(-num_entries_to_display)|reverse %}
+    {% for moduleData in reversed_data %}
+        speedData.unshift({{ moduleData.speed }});
+        var timestamp = new Date('{{ moduleData.createdAt|date('Y-m-d H:i:s') }}');
+        var formattedTimestamp = 'à ' + timestamp.getHours() + 'h' + timestamp.getMinutes();
+        dateLabels.unshift(formattedTimestamp);
+    {% endfor %}
+
+    var ctx = document.getElementById('speedChart').getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: dateLabels,
+            datasets: [{
+                label: 'Vitesse par minute en Mbit',
+                data: speedData,
+                borderColor: '#0a66dd',
+                backgroundColor: 'rgba(10, 102, 221, 0.2)', // Couleur de fond transparente
+                borderWidth: 2, // Largeur de la ligne
+                fill: true, // Remplissage sous la ligne
+                tension: 0.4, // Courbe plus lisse
+                pointRadius: 5, // Taille des points
+                pointHoverRadius: 7, // Taille des points au survol
+                pointBackgroundColor: '#0a66dd', // Couleur des points
+                pointBorderColor: '#fff', // Couleur de la bordure des points
+                pointBorderWidth: 2, // Largeur de la bordure des points
+            }]
+        },
+        options: {
+            responsive: true,
+            elements: {
+                point: {
+                    pointHoverBackgroundColor: '#0a66dd',
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 20,
+                    ticks: {
+                        callback: function(value, index, values) {
+                            return value + ' Mbit';
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+
+{% endblock %}

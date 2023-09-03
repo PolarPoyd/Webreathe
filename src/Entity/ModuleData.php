@@ -23,12 +23,23 @@ class ModuleData
     private ?string $energy = null;
 
     #[ORM\Column]
-    private ?bool $broken = null;
+    private ?bool $broken = false;
 
     #[ORM\ManyToOne(inversedBy: 'moduleData', cascade: ["persist", "remove"])]
-    private ?Module $module = null;    
-    
+    private ?Module $module = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $speed = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $flow = null;    
+    
+    public function __construct()
+    {
+        $this->created_at = new \DateTimeImmutable();
+    }
+
+    
     public function getId(): ?int
     {
         return $this->id;
@@ -93,4 +104,41 @@ class ModuleData
 
         return $this;
     }
+    
+
+    /**
+     * Get the value of broken
+     *
+     * @return ?bool
+     */
+    public function getBroken(): ?bool
+    {
+        return $this->broken;
+    }
+
+    public function getSpeed(): ?string
+    {
+        return $this->speed;
+    }
+
+    public function setSpeed(string $speed): static
+    {
+        $this->speed = $speed;
+
+        return $this;
+    }
+
+    public function getFlow(): ?string
+    {
+        return $this->flow;
+    }
+
+    public function setFlow(string $flow): static
+    {
+        $this->flow = $flow;
+
+        return $this;
+    }
+
+
 }

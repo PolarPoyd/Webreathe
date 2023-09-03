@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Historique des données
+{% endblock %}
+
+{% block body %}
+	<div class="container mt-5 mb-5">
+		<h1 class="text-center mt-5 mb-5">Historique des données</h1>
+		<table class="table table-hover">
+			<thead>
+				<tr>
+					<th scope="col">Température (°C)</th>
+					<th scope="col">Énergie (Watts)</th>
+					<th scope="col">Panne</th>
+					<th scope="col">Débit (Octets)</th>
+					<th scope="col">Vitesse (Mbits)</th>
+					<th scope="col">Mesuré le</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for moduleData in pagination %}
+					<tr {% if moduleData.broken %} class="table-danger" {% endif %}>
+						<td>{{ moduleData.temperature }}</td>
+						<td>{{ moduleData.energy }}</td>
+						<td>{{ moduleData.broken ? 'Oui' : 'Non' }}</td>
+						<td>{{ moduleData.flow }}</td>
+						<td>{{ moduleData.speed }}</td>
+						<td>{{ moduleData.createdAt|date('Y-m-d H:i:s') }}</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+		<div style="height: 40px;"></div>
+		<div class="text-center mt-5 mb-5">
+			{{ knp_pagination_render(pagination) }}
+		</div>
+		<div class="text-center mt-5">
+			<a class="btn btn-primary" href="{{ path('app_home') }}">Dashboard</a>
+		<a href="{{ path('app_module_show_module_data', {'id': module.id}) }}" class="btn btn-info btn-block">
+			Détail
+		</a>
+		</div>
+	</div>
+	<div style="height: 200px;"></div>
+{% endblock %}

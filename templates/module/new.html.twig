@@ -5,15 +5,26 @@
 {% block body %}
 
 {% for message in app.flashes('danger') %}
-<div class="alert alert-danger mt-4">
+<div class="alert alert-dismissible alert-danger mt-4">
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     {{ message }}
 </div>
 {% endfor %}
 
-    <h1>Ajoutez un module</h1>
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h1 class="text-center mt-5 mb-5">Ajoutez un module</h1>
 
-    {{ include('module/_form.html.twig') }}
+            {{ include('module/_form.html.twig') }}
 
-    <a href="{{ path('app_module_index') }}">Retour</a>
+            <div class="mt-3 text-center">
+                <a href="{{ path('app_home') }}" class="btn btn-secondary">Retour</a>
+            </div>
+        </div>
+    </div>
+
+    <div style="height: 300px;"></div>
+</div>
+
 {% endblock %}
-

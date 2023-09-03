@@ -1,0 +1,117 @@
+{# {% block body %}
+
+
+    <canvas id="energyChart" width="300" height="150"></canvas>
+
+
+
+    <script>
+    var energyData = [];
+var dateLabelsEnergy = [];
+
+{% set num_entries_to_display = 5 %}
+{% set reversed_data = module.moduleData|slice(-num_entries_to_display)|reverse %}
+{% for moduleData in reversed_data %}
+    energyData.unshift({{ moduleData.temperature }}); 
+    var timestampEnergy = new Date('{{ moduleData.createdAt|date('Y-m-d H:i:s') }}');
+    var formattedTimestampEnergy = 'à ' + timestampEnergy.getHours() + 'h' + timestampEnergy.getMinutes();
+    dateLabelsEnergy.unshift(formattedTimestampEnergy);
+{% endfor %}
+
+
+var ctxEnergy = document.getElementById('energyChart').getContext('2d');
+var energyChart = new Chart(ctxEnergy, {
+    type: 'bar',
+    data: {
+        labels: dateLabelsEnergy,
+        datasets: [{
+            label: 'Température par minute en °C', 
+            data: energyData,
+            backgroundColor: '#126ce7',
+            borderColor: '#0a66dd',
+            borderWidth: 1,
+            hoverBackgroundColor: '#6fa2e9',
+            hoverBorderColor: '#0447a5',
+        }]
+    },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 35, // Définit la valeur maximale sur l'axe Y à 35
+                    ticks: {
+                        stepSize: 5, // Définit l'intervalle entre les étiquettes
+                        callback: function (value, index, values) {
+                            return value + ' °C'; // Ajoutez le symbole degré Celsius
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    
+    </script>
+
+
+{% endblock %} #}
+
+
+{% block body %}
+    <canvas id="temperatureChart" width="300" height="150"></canvas>
+
+    <script>
+        var temperatureData = [];
+        var dateLabels = [];
+
+        {% set num_entries_to_display = 5 %}
+        {% set reversed_data = module.moduleData|slice(-num_entries_to_display)|reverse %}
+        {% for moduleData in reversed_data %}
+            temperatureData.unshift({{ moduleData.temperature }}); 
+            var timestamp = new Date('{{ moduleData.createdAt|date('Y-m-d H:i:s') }}');
+            var formattedTimestamp = 'à ' + timestamp.getHours() + 'h' + timestamp.getMinutes();
+            dateLabels.unshift(formattedTimestamp);
+        {% endfor %}
+
+        var ctx = document.getElementById('temperatureChart').getContext('2d');
+        var temperatureChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: dateLabels,
+                datasets: [{
+                    label: 'Température par minute en °C', 
+                    data: temperatureData,
+                    borderColor: '#0a66dd',
+                    backgroundColor: '#6fa2e9',
+                    borderWidth: 1,
+                    fill: true,
+                    tension: 0.1,
+                    pointRadius: 7,
+                    pointStyle: 'rectRounded',
+                }]
+            },
+            options: {
+                responsive: true,
+                elements: {
+                    point: {
+                        pointBorderColor: "#0a66dd",
+                        pointBackgroundColor: "#0a66dd",
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true, // Commence à 0 sur l'axe y
+                        max: 35, // Définit la valeur maximale sur l'axe y à 35
+                        ticks: {
+                            stepSize: 5, // Définit l'intervalle entre les étiquettes
+                            callback: function(value, index, values) {
+                                return value + ' °C'; // Ajoutez le symbole degré Celsius
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+{% endblock %}
