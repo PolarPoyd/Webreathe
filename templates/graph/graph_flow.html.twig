@@ -22,11 +22,11 @@
                 datasets: [{
                     label: 'Débit par minute en octets', 
                     data: flowData,
-                    backgroundColor: 'rgba(54, 162, 235, 0.5)', // Nuance de bleu
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)', 
                     borderColor: 'rgba(54, 162, 235, 1)', // Nuance de bleu
                     borderWidth: 1,
-                    hoverBackgroundColor: '#126ce7', // Nuance de bleu
-                    hoverBorderColor: 'rgba(75, 192, 192, 1)', // Nuance de bleu
+                    hoverBackgroundColor: '#126ce7', 
+                    hoverBorderColor: 'rgba(75, 192, 192, 1)', 
                 }]
             },
             options: {
@@ -40,8 +40,8 @@
             }
         },
         y: {
-            suggestedMin: 0, // Valeur minimale de l'axe y
-            suggestedMax: 100000, // Valeur maximale de l'axe y (100 000 octets)
+            suggestedMin: 0,
+            suggestedMax: 100000,
             ticks: {
                 callback: function(value, index, values) {
                     return value + ' octets'; 

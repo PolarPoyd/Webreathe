@@ -82,7 +82,6 @@ class Module
     public function removeModuleData(ModuleData $moduleData): self
     {
         if ($this->moduleData->removeElement($moduleData)) {
-            // set the owning side to null (unless already changed)
             if ($moduleData->getModule() === $this) {
                 $moduleData->setModule(null);
             }

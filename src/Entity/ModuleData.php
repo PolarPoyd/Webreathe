@@ -107,7 +107,7 @@ class ModuleData
     
 
     /**
-     * Get the value of broken
+     * Récupère la valeur de broken
      *
      * @return ?bool
      */

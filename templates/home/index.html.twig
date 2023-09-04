@@ -9,12 +9,17 @@ Dashboard
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="{{ asset('js/dashboard-update.js') }}"></script>
     <script>
+        // Attente du chargement complet de la page
         document.addEventListener("DOMContentLoaded", function () {
+            // Initialise la mise à jour automatique du tableau de bord avec l'URL de l'API et un intervalle de 10 secondes
             initDashboardUpdate('{{ path('app_latest_data_api') }}', 10000);
 
+            // Récupération des boutons d'activation et de désactivation de l'injection de données
             var activateButton = document.getElementById("activate-data-injection");
             var deactivateButton = document.getElementById("deactivate-data-injection");
 
+            // Vérifie l'état d'activation de l'injection de données dans le localStorage
+            // et ajuste l'état des boutons en conséquence
             if (localStorage.getItem('dataInjectionActivated') === 'true') {
                 activateButton.disabled = true;
                 deactivateButton.disabled = false;
@@ -23,13 +28,17 @@ Dashboard
                 deactivateButton.disabled = true;
             }
 
+            // Gère l'événement de clic sur le bouton d'activation
             activateButton.addEventListener("click", function () {
+                // Effectue une requête POST pour activer l'injection de données
                 axios.post("{{ path('enable_data_injection') }}")
                     .then(function (response) {
                         console.log(response);
-
+                        
+                        // Désactive le bouton d'activation et active le bouton de désactivation
                         activateButton.disabled = true;
                         deactivateButton.disabled = false;
+                        // Enregistre l'état activé dans le localStorage
                         localStorage.setItem('dataInjectionActivated', 'true'); 
                     })
                     .catch(function (error) {
@@ -37,6 +46,7 @@ Dashboard
                     });
             });
 
+            // Gère l'événement de clic sur le bouton de désactivation
             deactivateButton.addEventListener("click", function () {
                 axios.post("{{ path('disable_data_injection') }}")
                     .then(function (response) {

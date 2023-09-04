@@ -1,63 +1,3 @@
-{# {% block body %}
-
-
-    <canvas id="energyChart" width="300" height="150"></canvas>
-
-
-
-    <script>
-    var energyData = [];
-var dateLabelsEnergy = [];
-
-{% set num_entries_to_display = 5 %}
-{% set reversed_data = module.moduleData|slice(-num_entries_to_display)|reverse %}
-{% for moduleData in reversed_data %}
-    energyData.unshift({{ moduleData.temperature }}); 
-    var timestampEnergy = new Date('{{ moduleData.createdAt|date('Y-m-d H:i:s') }}');
-    var formattedTimestampEnergy = 'à ' + timestampEnergy.getHours() + 'h' + timestampEnergy.getMinutes();
-    dateLabelsEnergy.unshift(formattedTimestampEnergy);
-{% endfor %}
-
-
-var ctxEnergy = document.getElementById('energyChart').getContext('2d');
-var energyChart = new Chart(ctxEnergy, {
-    type: 'bar',
-    data: {
-        labels: dateLabelsEnergy,
-        datasets: [{
-            label: 'Température par minute en °C', 
-            data: energyData,
-            backgroundColor: '#126ce7',
-            borderColor: '#0a66dd',
-            borderWidth: 1,
-            hoverBackgroundColor: '#6fa2e9',
-            hoverBorderColor: '#0447a5',
-        }]
-    },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    max: 35, // Définit la valeur maximale sur l'axe Y à 35
-                    ticks: {
-                        stepSize: 5, // Définit l'intervalle entre les étiquettes
-                        callback: function (value, index, values) {
-                            return value + ' °C'; // Ajoutez le symbole degré Celsius
-                        }
-                    }
-                }
-            }
-        }
-    });
-
-    
-    </script>
-
-
-{% endblock %} #}
-
-
 {% block body %}
     <canvas id="temperatureChart" width="300" height="150"></canvas>
 
@@ -65,12 +5,18 @@ var energyChart = new Chart(ctxEnergy, {
         var temperatureData = [];
         var dateLabels = [];
 
+        {# Définit le nombre d'entrées à afficher #}
         {% set num_entries_to_display = 5 %}
+        {# Récupère les dernières entrées (basées sur num_entries_to_display) et les inverse pour les avoir dans l'ordre chronologique #}
         {% set reversed_data = module.moduleData|slice(-num_entries_to_display)|reverse %}
+        {# Boucle à travers les données inversées pour les traiter #}
         {% for moduleData in reversed_data %}
+            {# Ajoute la température au début du tableau temperatureData (unshift ajoute à l'index 0) #}
             temperatureData.unshift({{ moduleData.temperature }}); 
+            {# Convertit la chaîne de temps en objet Date et formate l'heure et les minutes #}
             var timestamp = new Date('{{ moduleData.createdAt|date('Y-m-d H:i:s') }}');
             var formattedTimestamp = 'à ' + timestamp.getHours() + 'h' + timestamp.getMinutes();
+            {# Ajoute le timestamp formaté au début du tableau dateLabels #}
             dateLabels.unshift(formattedTimestamp);
         {% endfor %}
 
@@ -101,8 +47,8 @@ var energyChart = new Chart(ctxEnergy, {
                 },
                 scales: {
                     y: {
-                        beginAtZero: true, // Commence à 0 sur l'axe y
-                        max: 35, // Définit la valeur maximale sur l'axe y à 35
+                        beginAtZero: true, 
+                        max: 35, 
                         ticks: {
                             stepSize: 5, // Définit l'intervalle entre les étiquettes
                             callback: function(value, index, values) {
