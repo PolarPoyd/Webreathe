@@ -150,3 +150,8 @@ Afin de supprimer la tâche mis en place:
 - Clique droit dessus, supprimer.
 
 ---
+
+N'hésitez pas à me contacter si vous avez le moindre problème pour run le projet. 
+Reina 
+Adriano
+
